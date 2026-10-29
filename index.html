@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-AO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Pena Máxima | Jogo de prisão</title>
+<meta name="description" content="Pena Máxima: jogo de vida na prisão. Cumpre a pena, trabalha, negoceia e planeia a fuga. Joga no telemóvel ou no computador.">
+<meta name="theme-color" content="#0b0d12">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#0b0d12;color:#f3efe6;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none;overscroll-behavior:none}
+#cv{position:fixed;inset:0;display:block;background:#0a0c10}
+#touch{position:fixed;inset:0;z-index:5}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+/* HUD */
+#hud{position:fixed;top:0;left:0;right:0;z-index:10;padding:calc(8px + env(safe-area-inset-top)) 10px 0;pointer-events:none;display:flex;gap:8px;align-items:flex-start;justify-content:space-between}
+.card{background:rgba(14,17,24,.78);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:7px 10px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#hL{display:grid;gap:5px;min-width:0}
+.tm{display:flex;gap:8px;align-items:baseline;white-space:nowrap}
+#hClock{font-weight:700;font-size:20px;letter-spacing:.03em}
+#hDay{font-size:12px;color:#c9c2b0}
+#hSch{font-size:11px;color:#ffcb6b;max-width:46vw;overflow:hidden;text-overflow:ellipsis}
+.bars{display:grid;grid-template-columns:auto 1fr;gap:3px 7px;align-items:center;font-size:9.5px;letter-spacing:.08em;color:#bdb7a6;width:min(46vw,190px)}
+.bar{height:7px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden}.bar i{display:block;height:100%;width:50%;border-radius:5px}
+#bHp{background:#e24b4b}#bEn{background:#e6c34b}#bFd{background:#e08a3a}#bHt{background:linear-gradient(90deg,#f0c24b,#ff3b3b)}
+#hR{display:grid;gap:6px;justify-items:end;pointer-events:none}
+#hMoney{font-weight:700;font-size:15px;color:#ffe08a}#hPena{font-size:11px;color:#cfd7e6}
+#bM{pointer-events:auto;padding:8px 14px;border-radius:12px;font-weight:600;font-size:13px;background:rgba(14,17,24,.85);border:1px solid rgba(255,255,255,.22)}
+#hHint{position:fixed;left:50%;transform:translateX(-50%);top:calc(138px + env(safe-area-inset-top));z-index:9;max-width:92vw;text-align:center;font-size:12px;color:#fff;padding:5px 12px;border-radius:999px;background:rgba(0,0,0,.45);pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#hHint:empty{display:none}
+/* botões */
+#acts{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:12;display:grid;grid-template-columns:auto auto;gap:10px;align-items:end;justify-items:end}
+.ab{width:68px;height:68px;border-radius:50%;font-weight:700;font-size:13px;background:rgba(18,22,32,.78);border:2px solid rgba(255,255,255,.35);display:grid;place-items:center;line-height:1.1;text-align:center;box-shadow:inset 0 2px 1px rgba(255,255,255,.25),0 6px 14px rgba(0,0,0,.4)}
+.ab.dn,.ab.on{background:rgba(255,200,90,.9);color:#2a1a00;border-color:#fff}
+#bA{width:92px;height:92px;font-size:15px;grid-column:2;border-color:rgba(255,220,120,.7)}
+#bA small{display:block;font-size:9.5px;font-weight:500;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px;opacity:.9}
+#bA.hot{background:rgba(255,200,90,.9);color:#2a1a00;animation:pl 1s infinite}
+@keyframes pl{50%{box-shadow:0 0 0 8px rgba(255,200,90,.25)}}
+#bB{grid-column:1;grid-row:1;background:rgba(150,30,30,.8)}
+#bR{grid-column:1;grid-row:2;width:56px;height:56px;font-size:12px}
+#joyB,#joyK{position:fixed;z-index:11;pointer-events:none;transform:translate(-50%,-50%);border-radius:50%;opacity:0}
+#joyB{width:110px;height:110px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.07)}
+#joyK{width:48px;height:48px;background:rgba(255,255,255,.4);border:2px solid rgba(255,255,255,.7)}
+#joyB.on,#joyK.on{opacity:1}
+/* avisos */
+#toast{position:fixed;left:50%;bottom:calc(120px + env(safe-area-inset-bottom));transform:translate(-50%,10px);z-index:30;max-width:88vw;padding:10px 16px;border-radius:14px;background:rgba(10,12,18,.92);border:1px solid rgba(255,255,255,.22);font-size:13.5px;text-align:center;opacity:0;pointer-events:none;transition:.25s}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#banner{position:fixed;left:50%;top:32%;transform:translate(-50%,-8px) scale(.96);z-index:30;max-width:90vw;font-weight:800;font-size:clamp(18px,5vw,30px);text-align:center;text-shadow:0 3px 16px #000,0 0 3px #000;opacity:0;pointer-events:none;transition:.3s;letter-spacing:.02em}
+#banner.on{opacity:1;transform:translate(-50%,0) scale(1)}
+#fade{position:fixed;inset:0;background:#000;z-index:60;opacity:0;pointer-events:none;transition:opacity .5s}
+#fade.on{opacity:1;pointer-events:auto}
+/* painel */
+#panel,#tm,#title,#end{position:fixed;inset:0;z-index:40;display:none;place-items:center;background:rgba(5,7,11,.72);padding:16px;touch-action:auto}
+#panel.on,#tm.on,#title.on,#end.on{display:grid}
+#pBox{width:min(520px,100%);max-height:86vh;overflow:auto;background:rgba(20,24,34,.97);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:18px 16px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#pT{font-size:20px;font-weight:800;margin-bottom:8px;color:#ffe08a}
+#pB p{font-size:14px;line-height:1.5;color:#e4e0d4;margin:6px 0}.sm{font-size:12px!important;color:#aaa59a!important}
+#pBtn{display:grid;gap:8px;margin-top:12px}
+.pb{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);font-size:14px;text-align:left}
+.pb:active{background:rgba(255,200,90,.85);color:#2a1a00}.pb.dis{opacity:.4;pointer-events:none}
+/* minijogo */
+#tmBox{width:min(440px,100%);background:rgba(20,24,34,.97);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:18px;text-align:center}
+#tmT{font-size:19px;font-weight:800;color:#ffe08a}#tmS{font-size:13px;color:#cfcabc;margin:6px 0 14px}
+#tmc{width:100%;height:60px;display:block}#tmR{min-height:20px;margin:10px 0;font-size:14px}
+#tmB{width:100%;padding:16px;border-radius:14px;background:#41c26e;color:#06210f;font-weight:800;font-size:18px}
+/* progresso e sono */
+#prog{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;width:min(260px,70vw);display:none;text-align:center;font-size:12px}
+#prog.on{display:block}#progBar{height:10px;border-radius:6px;background:rgba(255,255,255,.2);overflow:hidden;margin-top:4px}#progB{height:100%;width:0;background:#ffcb6b}
+#sleepB{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:20;padding:14px 22px;border-radius:16px;background:rgba(10,14,28,.9);border:1px solid #7aa2ff;font-weight:700;display:none}
+#sleepB.on{display:block}
+/* título */
+#title{background:radial-gradient(900px 600px at 50% 10%,#2a3350,#0b0d12 70%)}
+#tBox{text-align:center;max-width:420px;width:100%}
+#tBox h1{font-size:clamp(40px,13vw,64px);line-height:.95;letter-spacing:.02em;font-weight:900;text-transform:uppercase;background:linear-gradient(180deg,#ffd27a,#e0792a);-webkit-background-clip:text;background-clip:text;color:transparent}
+#tBox .st{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:#aeb6c8;margin:10px 0 28px}
+#tBox button{display:block;width:100%;margin:10px 0;padding:16px;border-radius:14px;font-weight:800;font-size:16px;background:linear-gradient(135deg,#ffd27a,#e0792a);color:#2a1500}
+#tBox button.g{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.3)}
+#tBox p{font-size:11.5px;color:#8f98ad;margin-top:20px;line-height:1.5}
+#end{background:rgba(5,7,11,.9)}#eBox{text-align:center;max-width:440px}
+#endT{font-size:clamp(30px,9vw,46px);font-weight:900;color:#ffd27a}#endP{margin:12px 0;font-size:15px;color:#e4e0d4;line-height:1.5}#endS{font-size:12px;color:#aab}
+#againB{margin-top:20px;padding:14px 26px;border-radius:14px;background:linear-gradient(135deg,#ffd27a,#e0792a);color:#2a1500;font-weight:800;font-size:16px}
+@media(min-width:900px){#hHint{top:96px}.ab{width:74px;height:74px}#bA{width:100px;height:100px}}
+@media(max-height:430px){#hHint{display:none}.ab{width:58px;height:58px}#bA{width:76px;height:76px}}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="touch"></div>
+<div id="joyB"></div><div id="joyK"></div>
+
+<div id="hud">
+  <div id="hL" class="card">
+    <div class="tm"><span id="hClock">06:30</span><span id="hDay">Dia 1</span></div>
+    <div id="hSch"></div>
+    <div class="bars"><span>VIDA</span><div class="bar"><i id="bHp"></i></div><span>ENERGIA</span><div class="bar"><i id="bEn"></i></div><span>COMIDA</span><div class="bar"><i id="bFd"></i></div><span>SUSPEITA</span><div class="bar"><i id="bHt"></i></div></div>
+  </div>
+  <div id="hR"><button id="bM">Menu</button><div class="card"><div id="hMoney">0 mç</div><div id="hPena"></div></div></div>
+</div>
+<div id="hHint"></div>
+
+<div id="acts">
+  <button class="ab" id="bB">BATER</button>
+  <button class="ab" id="bA">AÇÃO<small></small></button>
+  <button class="ab" id="bR">CORRER</button>
+</div>
+
+<div id="prog"><span id="progT"></span><div id="progBar"><div id="progB"></div></div></div>
+<button id="sleepB">A dormir… toca para acordar</button>
+<div id="toast"></div><div id="banner"></div><div id="fade"></div>
+
+<div id="panel"><div id="pBox"><div id="pT"></div><div id="pB"></div><div id="pBtn"></div></div></div>
+<div id="tm"><div id="tmBox"><div id="tmT"></div><div id="tmS"></div><canvas id="tmc" width="400" height="60"></canvas><div id="tmR"></div><button id="tmB">PARAR</button></div></div>
+
+<div id="title"><div id="tBox"><h1>Pena<br>Máxima</h1><div class="st">Vida na prisão</div>
+<button id="cont" class="g">Continuar</button><button id="newB">Novo jogo</button>
+<p>Cumpre a pena, trabalha, negoceia, luta e planeia a fuga.<br>Jogo original. Toca no ecrã para andar.</p></div></div>
+<div id="end"><div id="eBox"><div id="endT"></div><div id="endP"></div><div id="endS"></div><button id="againB">Jogar outra vez</button></div></div>
+
+<script src="game.js"></script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});</script>
+</body>
+</html>
