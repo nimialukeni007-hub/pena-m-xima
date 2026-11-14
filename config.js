@@ -2,7 +2,7 @@
 window.CFG={
  apiKey:'AIzaSyBk6zDp4Pp9NNYgHg75xLlroQkTJqf9zcs',                       /* Firebase > Configurações do projeto > Chave de API da Web */
  dbUrl:'https://pena-maxima-default-rtdb.firebaseio.com',
- googleClientId:'',               /* Google Cloud > Credenciais > ID de cliente OAuth (Web) */
+ googleClientId:'122123256104-0u9mm8l1b0odhl366mofhtg6ouoc1sgf.apps.googleusercontent.com',               /* Google Cloud > Credenciais > ID de cliente OAuth (Web) */
  admin:'nimialukeni007@gmail.com', /* só esta conta abre o painel de aprovação */
  whatsapp:'244929966303',         /* para onde o jogador envia o comprovativo */
  pay:{express:'939632060',paypay:'939966303'},
