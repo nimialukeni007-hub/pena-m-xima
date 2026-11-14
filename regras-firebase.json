@@ -3,18 +3,18 @@
     "users": {
       "$uid": {
         "ent": {
-          ".read": "auth != null && (auth.uid === $uid || auth.token.email === 'COLOCA_AQUI_O_TEU_GMAIL')",
-          ".write": "auth != null && auth.token.email === 'COLOCA_AQUI_O_TEU_GMAIL' && auth.token.email_verified === true"
+          ".read": "auth != null && (auth.uid === $uid || auth.token.email === 'nimialukeni007@gmail.com')",
+          ".write": "auth != null && auth.token.email === 'nimialukeni007@gmail.com' && auth.token.email_verified === true"
         }
       }
     },
     "requests": {
-      ".read": "auth != null && auth.token.email === 'COLOCA_AQUI_O_TEU_GMAIL'",
+      ".read": "auth != null && auth.token.email === 'nimialukeni007@gmail.com'",
       ".indexOn": [
         "status"
       ],
       "$id": {
-        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid && newData.child('status').val() === 'pending') || (auth.token.email === 'COLOCA_AQUI_O_TEU_GMAIL' && auth.token.email_verified === true))"
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid && newData.child('status').val() === 'pending') || (auth.token.email === 'nimialukeni007@gmail.com' && auth.token.email_verified === true))"
       }
     },
     "pm": {
