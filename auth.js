@@ -13,7 +13,7 @@ async hash(pw,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder(
 users(){return JSON.parse(localStorage.getItem('pm_users')||'{}')},
 strong(p){return p.length>=8&&/[A-Za-z]/.test(p)&&/\d/.test(p)},
 async register(email,pw){email=email.trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(email))throw Error('Email inválido.');if(!AUTH.strong(pw))throw Error('Usa 8 ou mais caracteres, com letras e números.');
-if(AUTH.live()){const j=await AUTH.call('accounts:signUp',{email,password:pw,returnSecureToken:true});return AUTH.set(j)}
+if(AUTH.live()){const j=await AUTH.call('accounts:signUp',{email,password:pw,returnSecureToken:true});try{await AUTH.call('accounts:sendOobCode',{requestType:'VERIFY_EMAIL',idToken:j.idToken})}catch(e){}return AUTH.set(j)}
 const us=AUTH.users();if(us[email])throw Error('Este email já tem conta.');const salt=crypto.getRandomValues(new Uint8Array(16));us[email]={s:btoa(String.fromCharCode(...salt)),h:await AUTH.hash(pw,salt)};localStorage.setItem('pm_users',JSON.stringify(us));return AUTH.set({localId:'L'+btoa(email).slice(0,12),email,idToken:'',refreshToken:''},{local:1})},
 login(email,pw){email=email.trim().toLowerCase();return AUTH.guard(async()=>{if(AUTH.live()){const j=await AUTH.call('accounts:signInWithPassword',{email,password:pw,returnSecureToken:true});return AUTH.set(j)}
 const u=AUTH.users()[email];if(!u)throw Error('Não existe conta com este email.');const salt=Uint8Array.from(atob(u.s),c=>c.charCodeAt(0));if(await AUTH.hash(pw,salt)!==u.h)throw Error('Email ou senha incorretos.');return AUTH.set({localId:'L'+btoa(email).slice(0,12),email,idToken:'',refreshToken:''},{local:1})})},
