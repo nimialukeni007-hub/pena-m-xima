@@ -1,0 +1,27 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        "ent": {
+          ".read": "auth != null && (auth.uid === $uid || auth.token.email === 'COLOCA_AQUI_O_TEU_GMAIL')",
+          ".write": "auth != null && auth.token.email === 'COLOCA_AQUI_O_TEU_GMAIL' && auth.token.email_verified === true"
+        }
+      }
+    },
+    "requests": {
+      ".read": "auth != null && auth.token.email === 'COLOCA_AQUI_O_TEU_GMAIL'",
+      ".indexOn": [
+        "status"
+      ],
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid && newData.child('status').val() === 'pending') || (auth.token.email === 'COLOCA_AQUI_O_TEU_GMAIL' && auth.token.email_verified === true))"
+      }
+    },
+    "pm": {
+      "rooms": {
+        ".read": "auth != null && root.child('users').child(auth.uid).child('ent').child('world').val() === true",
+        ".write": "auth != null && root.child('users').child(auth.uid).child('ent').child('world').val() === true"
+      }
+    }
+  }
+}

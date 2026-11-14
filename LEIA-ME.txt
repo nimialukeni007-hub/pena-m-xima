@@ -1,0 +1,36 @@
+PENA MAXIMA 3D - COMO LIGAR (passo a passo)
+
+A) Pôr no ar (GitHub Pages)
+1. Cria o repositório (ex.: pena-maxima) e carrega TODOS os ficheiros deste zip, soltos, na raiz.
+2. Settings > Pages > Branch main / root. Abre o link. Já funciona em MODO DE TESTE (contas só neste aparelho).
+
+B) Firebase (login Google, email de verificação/recuperação, pagamentos)
+1. console.firebase.google.com > o teu projeto pena-maxima (já tens a base de dados).
+2. Build > Authentication > Get started > Sign-in method:
+   - Email/Password: activar.
+   - Google: activar, escolher o teu email de suporte.
+3. Authentication > Settings > Authorized domains > Add: nimialukeni007-hub.github.io
+4. Project settings (roda dentada) > General > Your apps > ícone </> (Web) > registar a app > copia o apiKey ("AIza...").
+5. Abre config.js no GitHub (lápis) e preenche:
+   apiKey:'AIza...'
+   admin:'o.teu.gmail@gmail.com'
+6. Login Google: console.cloud.google.com > o mesmo projeto > APIs e serviços > Credenciais >
+   "Web client (auto created by Google Service)" ou Criar credenciais > ID de cliente OAuth > Web.
+   Em "Origens JavaScript autorizadas" põe https://nimialukeni007-hub.github.io
+   Copia o "ID do cliente" para googleClientId em config.js.
+7. Realtime Database > separador Regras > apaga tudo e cola o conteúdo de regras-firebase.json,
+   trocando COLOCA_AQUI_O_TEU_GMAIL pelo teu Gmail (3 sítios) > Publicar.
+   Estas regras é que protegem de verdade: só tu aprovas itens e só quem tem World entra no online.
+8. Email de verificação/recuperação: Authentication > Templates. A recuperação de senha já é enviada pelo Firebase.
+
+C) Pagamento (1000 Kz por item, em config.js > prices)
+- O jogador toca em Pagar com Multicaixa Express ou PayPay: o número é copiado (não aparece escrito no ecrã) e a app abre.
+- Depois toca em "Já paguei". Chega-te um pedido.
+- Abres /admin.html no teu site, entras com o teu Gmail e carregas "Aprovar" depois de ver o dinheiro. Só então desbloqueia.
+- Confirmação 100% automática exige um serviço com API (ex.: Proxypay) e contrato; Express e PayPay não têm API pública para isto.
+- Logótipos oficiais: põe express.png e paypay.png na raiz e aparecem nos botões.
+- PayPay Android: em config.js > apps > paypay > android escreve o nome do pacote (id= no link da Play Store) para abrir direto.
+
+D) Notas
+- Modo World = o online antigo. Fica trancado até pagarem.
+- Número de WhatsApp para comprovativos: config.js > whatsapp.
