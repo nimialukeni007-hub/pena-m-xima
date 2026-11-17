@@ -1,0 +1,70 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        "ent": {
+          ".read": "auth != null && (auth.uid === $uid || auth.token.email === 'nimialukeni007@gmail.com')",
+          ".write": "auth != null && auth.token.email === 'nimialukeni007@gmail.com' && auth.token.email_verified === true"
+        },
+        "claimed": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid",
+          ".validate": "newData.isNumber() && newData.val() <= root.child('users').child($uid).child('ent').child('coinsTotal').val()"
+        }
+      }
+    },
+    "requests": {
+      ".read": "auth != null && auth.token.email === 'nimialukeni007@gmail.com'",
+      ".indexOn": [
+        "status"
+      ],
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid && newData.child('status').val() === 'pending') || (auth.token.email === 'nimialukeni007@gmail.com' && auth.token.email_verified === true))"
+      }
+    },
+    "config": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email === 'nimialukeni007@gmail.com' && auth.token.email_verified === true"
+    },
+    "pm": {
+      "rooms": {
+        ".read": "auth != null && root.child('users').child(auth.uid).child('ent').child('world').val() === true",
+        ".write": "auth != null && root.child('users').child(auth.uid).child('ent').child('world').val() === true"
+      }
+    },
+    "rank": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['n','s']) && newData.child('s').isNumber() && newData.child('s').val() <= 20000 && newData.child('n').isString() && newData.child('n').val().length <= 20"
+      }
+    },
+    "profiles": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "l"
+      ],
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['n']) && newData.child('n').isString() && newData.child('n').val().length <= 20 && (!newData.child('p').exists() || (newData.child('p').isString() && newData.child('p').val().length <= 9000))"
+      }
+    },
+    "presence": {
+      ".read": "auth != null && auth.token.email === 'nimialukeni007@gmail.com' && auth.token.email_verified === true",
+      "$uid": {
+        "t": {
+          ".write": "auth != null && auth.uid === $uid",
+          ".validate": "newData.isNumber()"
+        },
+        "n": {
+          ".write": "auth != null && auth.uid === $uid",
+          ".validate": "newData.isString() && newData.val().length <= 20"
+        },
+        "c": {
+          ".write": "auth != null && auth.uid === $uid && !data.exists()",
+          ".validate": "newData.isNumber()"
+        }
+      }
+    }
+  }
+}
