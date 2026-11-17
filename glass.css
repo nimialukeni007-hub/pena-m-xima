@@ -1,0 +1,54 @@
+/* Visual "vidro líquido" + paleta profissional (aço, azul-gelo, dourado só para dinheiro) */
+:root{--n0:#050d16;--n1:#0e1b2a;--n2:#1d3147;--n3:#3d566e;--n4:#9db2c4;--n5:#d7e2ec;--ac:#4f9bff;--ac2:#a5d2ff;--ac3:#7a8cff;--bad:#ff6f6f;--ok:#5fe0b0;--gold:#ffd98a;
+ --gl:rgba(255,255,255,.075);--gl2:rgba(255,255,255,.14);--ge:rgba(255,255,255,.22)}
+body{background:#050d16}
+.glass,#pBox,#end .box,#toast,#bM,#hL,.expr,#spons,#stObj{
+ background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 45%,rgba(120,160,255,.07)) ,rgba(10,22,36,.46);
+ -webkit-backdrop-filter:blur(12px) saturate(1.5);backdrop-filter:blur(12px) saturate(1.5);
+ border:1px solid rgba(255,255,255,.2);
+ box-shadow:0 24px 70px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 0 rgba(255,255,255,.06),inset 0 0 40px rgba(130,170,255,.05)}
+.glass{border-radius:26px}
+#pBox{background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.05) 45%,rgba(120,160,255,.08)),rgba(10,22,36,.62);border-radius:24px}
+#panel,#tm,#end{background:radial-gradient(ellipse at 50% 30%,rgba(40,70,120,.35),rgba(3,8,14,.78))}
+/* botões */
+.btn{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0) 52%),linear-gradient(135deg,var(--ac2),var(--ac) 55%,var(--ac3));color:#031026;box-shadow:0 10px 28px rgba(79,155,255,.35),inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 6px rgba(20,60,140,.25);border:1px solid rgba(255,255,255,.35);letter-spacing:.1em}
+.btn:hover{filter:brightness(1.06)}
+.btn.s{background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.04));color:var(--n5);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 6px 18px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.22);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.btn.ghost{background:transparent;box-shadow:none;border-color:rgba(255,255,255,.16)}
+.btn.g{background:rgba(255,255,255,.94);color:#14202c}
+#pBtn button,#pBox button{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.24);color:#eaf2fa;border-radius:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+#pBox button:active{transform:scale(.98)}
+.eb{color:var(--ac2)}
+.scr input,#pBox input{background:rgba(5,14,24,.55);border:1px solid rgba(255,255,255,.2);box-shadow:inset 0 2px 8px rgba(0,0,0,.3)}.scr input:focus,#pBox input:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(79,155,255,.25)}
+.pw button{background:rgba(255,255,255,.12);color:var(--n5)}
+.tag,.badge{background:rgba(95,224,176,.16);color:#8cf0c8}
+/* menu e ecrãs: fundo com luz suave */
+#menu,#login,#loja,#more,#comm,#custom,#pay{background:radial-gradient(900px 500px at 15% 10%,rgba(79,155,255,.18),transparent 60%),radial-gradient(700px 500px at 90% 90%,rgba(122,140,255,.15),transparent 60%),linear-gradient(180deg,rgba(4,10,18,.35),rgba(4,10,18,.7))}
+.scr h1,.scr h2,.scr h3{text-shadow:0 2px 22px rgba(79,155,255,.35)}
+/* HUD de jogo */
+#hL{border-radius:18px}
+#hMoney{color:var(--gold)}
+.bar{background:rgba(255,255,255,.14);box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+#bHp{background:linear-gradient(90deg,#ff7d7d,#ff4d5e)}#bEn{background:linear-gradient(90deg,#ffe08a,#ffc24b)}#bFd{background:linear-gradient(90deg,#ffb86b,#ff8f3d)}
+.ab{background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.04) 55%),rgba(14,24,38,.55);border:1.5px solid rgba(255,255,255,.45);box-shadow:inset 0 2px 2px rgba(255,255,255,.5),inset 0 -6px 14px rgba(0,0,0,.25),0 8px 22px rgba(0,0,0,.4)}
+#bA{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0) 55%),linear-gradient(135deg,#ffe29b,#ffc15e);color:#2a1a00}
+#bB{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%),linear-gradient(135deg,#ff7a7a,#c93a4a)}
+#bK{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%),linear-gradient(135deg,#6db1ff,#3b6fe0)}
+#bG{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 55%),linear-gradient(135deg,#6be0b4,#2f9d78)}
+#toast{border-radius:16px;color:#eef5fb}
+#bM,#hHint{background:rgba(10,22,36,.55)}
+#spons{border-radius:16px;color:var(--n5)}#spons b{color:var(--ac2)}#spons a{color:var(--gold)}
+.expr{border-color:rgba(165,210,255,.4);background:rgba(79,155,255,.14)}
+#stObj{border-radius:16px}#stObj b{color:var(--ac2)}
+#loja h4{color:var(--ac2)}#loja .it,#comm .li{border-bottom-color:rgba(255,255,255,.1)}
+#comm .tabs2 button.on{background:rgba(79,155,255,.3);box-shadow:inset 0 0 0 1px rgba(165,210,255,.5)}
+/* barra de rolagem discreta */
+*{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.25) transparent}
+
+/* DESEMPENHO: desfoque de fundo é pesado no telemóvel; dentro do jogo usa fundos sólidos translúcidos */
+body.ingame *,body.ingame *::before,body.ingame *::after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+body.ingame #hL,body.ingame #toast,body.ingame #bM,body.ingame #spons,body.ingame #stObj,body.ingame #hHint{background:rgba(10,20,32,.78)!important}
+body.ingame #pBox,body.ingame #end .box{background:rgba(12,24,38,.95)!important}
+body.ingame #panel,body.ingame #tm,body.ingame #end{background:rgba(3,8,14,.72)!important}
+body.ingame .ab{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.02) 55%),rgba(16,26,40,.82)}
+.ab,#hL,#bA{will-change:auto}
