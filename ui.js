@@ -15,6 +15,7 @@ $('#pw').addEventListener('input',()=>{const p=$('#pw').value;let s=0;if(p.lengt
 $('#mode').textContent=AUTH.live()?'':'Modo de teste: contas guardadas só neste aparelho.';
 async function busy(btn,fn){btn.disabled=true;try{await fn()}catch(e){setMsg(e.message||'Erro.')}finally{btn.disabled=false}}
 $('#go').onclick=()=>busy($('#go'),async()=>{const e=$('#em').value,p=$('#pw').value;setMsg('');if(!e||!p)throw Error('Preenche o email e a senha.');if(tabMode=='in')await AUTH.login(e,p);else await AUTH.register(e,p);await afterLogin()});
+try{AUTH.preloadG()}catch(e){}
 $('#gg').onclick=()=>busy($('#gg'),async()=>{await AUTH.google();await afterLogin()});
 $('#fg').onclick=ev=>{ev.preventDefault();busy($('#fg'),async()=>{const e=$('#em').value;if(!e)throw Error('Escreve o teu email primeiro.');await AUTH.reset(e);setMsg('Enviámos um email para recuperar a senha. Vê também o spam.',1)})};
 ['em','pw'].forEach(i=>$('#'+i).addEventListener('keydown',e=>{if(e.key=='Enter')$('#go').click()}));
