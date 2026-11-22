@@ -4,7 +4,7 @@
 if(typeof NPC==='undefined'||typeof updateNPC!=='function')return;
 const rr=(a,b)=>a+Math.random()*(b-a),pk=a=>a[Math.floor(Math.random()*a.length)];
 const hash=s=>{let h=7;for(const c of String(s||'x'))h=(h*31+c.charCodeAt(0))>>>0;return h};
-const TR=['calmo','violento','ladrao','covarde','sociavel'];
+const TR=['calmo','violento','ladrao','covarde','sociavel'],GTR=['rigido','preguicoso','corrupto','gentil','agressivo'];
 const alive=n=>NPC.indexOf(n)>=0;
 let MEM={},memK='',lastDay=-1,offT=0,svT=0,propCd=0,FV=null,HS=0;
 function mem(){const k=(typeof SAVEKEY!=='undefined'?SAVEKEY:'pm_v2')+'_npcmem';if(k!==memK){memK=k;try{MEM=JSON.parse(localStorage.getItem(k)||'{}')}catch(e){MEM={}}}return MEM}
@@ -19,7 +19,7 @@ function genLook(n,h){const l={},g=n.guard||n.cop;
   l.fx=fx;if(!g&&(h>>18)%3===0)l.beard=(h>>20)%4;return l}
 function brain(n){let b=n._br;if(b)return b;const M=mem(),h=hash(n.name);
   const m=M[n.name]||(M[n.name]={p:0,r:{}});
-  b=n._br={m,tr:n.leader?'chefe':n.cop?'duro':TR[h%5],hunger:.15+(h%5)/10,energy:rr(.5,1),fear:0,anger:0,mood:.6,goal:null,gT:0,next:rr(3,9),pCd:0,gcd:0};
+  b=n._br={m,tr:n.leader?'chefe':n.cop?'duro':n.guard?GTR[h%5]:TR[h%5],hunger:.15+(h%5)/10,energy:rr(.5,1),fear:0,anger:0,mood:.6,goal:null,gT:0,next:rr(3,9),pCd:0,gcd:0};
   n.lk=Object.assign(genLook(n,h),n.lk||{});return b}
 function rel(a,o){const m=brain(a).m.r;if(m[o.name]==null){let v=((hash(a.name+o.name)%41)-20);if(a.gang&&o.gang)v+=a.gang===o.gang?30:-40;m[o.name]=v}return m[o.name]}
 function addRel(a,o,d){const m=brain(a).m.r;m[o.name]=clampv(rel(a,o)+d,-100,100)}
@@ -48,8 +48,8 @@ function needs(n,b,dt){
   b.mood=clampv(1-b.hunger*.5-(1-b.energy)*.3-b.anger*.3-b.fear*.2,0,1)}
 /* ---------- expressões e postura (lidas pelo desenho) ---------- */
 function look(n,b,dt){
-  let ex=0;const lying=n.ko>0||n.down>0,fight=n.aggro>0||b.goal==='fight';
-  if(lying||n.hurt>0)ex=4;else if(fight)ex=2;else if(b.fear>.5||b.goal==='flee')ex=3;else if(b.hunger>.85||b.energy<.22||b.goal==='rest')ex=5;else if(n.talkT>0&&b.mood>.5)ex=1;else if(b.mood>.78)ex=1;
+  let ex=0;const lying=n.ko>0||n.down>0,fight=n.aggro>0||b.goal==='fight'||n.state==='chase'||n.state==='revista';
+  if(lying||n.hurt>0)ex=4;else if(fight)ex=2;else if(b.fear>.5||b.goal==='flee')ex=3;else if(b.hunger>.85||b.energy<.22||b.goal==='rest'||n.hp<n.mhp*.3)ex=5;else if(n.talkT>0&&b.mood>.5)ex=1;else if(b.mood>.78)ex=1;
   n.expr=ex;const k=Math.min(1,dt*4);
   const hp=n.hp/n.mhp,hT=(b.goal==='rest'?.9:hp<.35?.8:(b.energy<.3||b.hunger>.9)?.55:0),gT=(fight||b.goal==='steal'&&0)?.85:(b.fear>.5?.7:0);
   n.hunch=(n.hunch||0)+(hT-(n.hunch||0))*k;n.gd=(n.gd||0)+(gT-(n.gd||0))*k;n.gest=(n.gest||0)+((n.talkT>0?1:0)-(n.gest||0))*k;
@@ -86,7 +86,8 @@ function topic(n,b,t){const L=(TALK[b.tr]||TALK.calmo).slice(),hr=hh(),p=b.m.p;
   return pk(L)}
 function face(a,t){a.face=Math.sign(t.x-a.x)||a.face}
 function greet(n,b){if(GT<b.gcd||n.talkT>0||Math.abs(n.x-P.x)>170||n.scene!==P.scene)return;b.gcd=GT+45;const p=b.m.p;
-  if(p>35)say(n,pk(GOOD),2.4);else if(p<-35)say(n,pk(BAD),2.4)}
+  if(n.guard){if(p>35)say(n,pk(['Bom dia, rapaz. Continua assim.','Estás a portar-te bem.']),2.4);else if(p<-35)say(n,pk(['Estou de olho em ti.','Um passo em falso e vais para a solitária.']),2.4)}
+  else if(p>35)say(n,pk(GOOD),2.4);else if(p<-35)say(n,pk(BAD),2.4)}
 function run(n,b,dt){
   const g=b.goal,t=b.tgt;b.t+=dt;
   if(g==='flee'){const th=n.foe&&alive(n.foe)?n.foe:P,dir=Math.sign(n.x-th.x)||1;n.running=true;stepToward(n,n.x+dir*400,n.z,n.spd*1.5,dt);if(b.fear<.2||b.t>6){b.shouted=0;n.foe=null;return 1}return 0}
@@ -212,6 +213,26 @@ const _un=updateNPC;updateNPC=function(n,dt){const b=brain(n);needs(n,b,dt);look
   if(n.foe&&!alive(n.foe))n.foe=null;
   if(life(n,b,dt))return;
   _un(n,dt)};
+if(typeof updateGuard==='function'){const _ug=updateGuard;
+ updateGuard=function(g,dt,now){const b=brain(g);needs(g,b,dt);look(g,b,dt);
+  if(!g.base)g.base=g.spd;g.spd=g.base*(g.hp<g.mhp*.35?.8:1)*(b.tr==='agressivo'?1.1:1);
+  if(g.ko>0||g.down>0)return _ug(g,dt,now);
+  if(g.hurt>.15){if(!g._hz){g._hz=1;if(P.atk>0&&Math.abs(g.x-P.x)<300&&g.scene===P.scene){say(g,pk(['Ahh! Reforços!','Está a atacar-me!','Reforços, depressa!']),2.4);noise(P.scene,P.x);pRel(g,-8)}}}else g._hz=0;
+  if(g.state!=='chase'&&g.hp<g.mhp)g.hp=Math.min(g.mhp,g.hp+dt*.2);
+  if(!g.fixed&&g.state==='patrol'){const see=g.scene===P.scene&&playerSeenBy(g);
+    if(b.rest&&GT>=b.rest)b.rest=0;
+    if(b.tr==='gentil'&&see&&violation()&&GT>(b.warnT||0)){b.warnT=GT+25;say(g,pk(['Ei! Pára com isso, é o último aviso.','Não me obrigues a chamar reforços.']),2.8);P.heat=Math.max(0,P.heat-8)}
+    if(b.tr==='preguicoso'&&!see&&b.energy<.35&&!b.rest){b.rest=GT+7;say(g,'Que sono… cinco minutos.',2.2)}
+    if(b.rest&&GT<b.rest){g.moving=false;b.energy=Math.min(1,b.energy+dt*.04);return}
+    if(g.scene===P.scene&&!g.moving)greet(g,b)}
+  return _ug(g,dt,now)}}
+if(typeof doRevista==='function'){const _dr=doRevista;
+ doRevista=function(g){const b=brain(g);let ks=[];try{ks=Object.keys(contraband())}catch(e){}
+  if(b.tr==='corrupto'&&ks.length&&P.money>=15&&!panelOpen){const amt=Math.min(P.money,20+ks.length*10);
+   openPanel(g.name,'<p><b>'+g.name+'</b> olha à volta e baixa a voz.</p><p>“Isso que levas é proibido… mas hoje estou de bom humor. '+amt+' Kz e eu não vi nada.”</p>',[
+    {t:'Pagar '+amt+' Kz',f:()=>{closePanel();P.money-=amt;P.heat=Math.max(0,P.heat-20);pRel(g,-2);say(g,'Não vi nada. Circula.',2.4);toast('Subornaste o guarda.')}},
+    {t:'Recusar',f:()=>{closePanel();_dr(g)}}]);return}
+  _dr(g)}}
 const _t7=tick7;tick7=function(dt){_t7(dt);try{ai(dt)}catch(e){}};
 if(typeof strike==='function'){const _st=strike;strike=function(){const r=_st.apply(this,arguments);if(r){HS=.07;P.shake=Math.max(P.shake||0,.16)}return r}}
 if(typeof update==='function'){const _up=update;update=function(dt,now){if(HS>0){HS-=dt;dt*=.15}return _up(dt,now)}}
