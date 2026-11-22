@@ -81,7 +81,7 @@ function renderGame(now,dt){
     if(d.t==='cam'&&Math.abs(d.x-ex)<40&&(camSeen>0||Math.floor(R3.t*2)%2))bill(g,R3.tex.glow,d.x,2.9,.62,.4,.4,{col:[1,.1,.1],em:1.3,a:.9})}
   g.additive(false);
   g.alpha(true);
-  for(const [c,n] of chs){if(!n)continue;if(c.dead){const dd0=Math.hypot(c.x-ex,c.z-ez);if(dd0<7&&n.name&&!n.guard&&!n.remote){const t=txtTex(n.name+' (KO)','name','#b9bcc4');bill(g,t.t,c.x,1.0,c.z,.8,.8/t.a,{})}continue}const dd=Math.hypot(c.x-ex,c.z-ez);const y=c.look.height*1.95*1.12+.35;
+  for(const [c,n] of chs){if(!n)continue;if(c.dead){const dd0=Math.hypot(c.x-ex,c.z-ez);if(dd0<7&&n.name&&!n.remote){const t=txtTex(n.name+' (KO)','name','#b9bcc4');bill(g,t.t,c.x,1.0,c.z,.8,.8/t.a,{})}continue}const dd=Math.hypot(c.x-ex,c.z-ez);const y=c.look.height*1.95*1.12+.35;
     if(n.talk&&n.talkT>0){const t=txtTex(n.talk,'bubble');bill(g,t.t,c.x,y+.12,c.z,1.6,1.6/t.a,{})}
     else if(dd<7&&n.name&&!n.fixed){const cc=n.guard?'#9fc0ff':n.aggro>0?'#ff8c7a':'#ffe9b0';const pt=(n.remote&&n.pu&&window.AVT)?AVT(n,cc):null;if(pt)bill(g,pt.t,c.x,y,c.z,1.3,1.3/pt.a,{});else{const t=txtTex(n.name,'name',cc);bill(g,t.t,c.x,y,c.z,.9,.9/t.a,{})}}}
   for(const q of fx)if(q.s===P.scene){const t=txtTex(String(q.txt),'name',q.col||'#ffe08a');bill(g,t.t,q.x/UX,2.1+(1-q.t)*.9,q.z*DZ,1,1/t.a,{a:cl(q.t*2,0,1)})}

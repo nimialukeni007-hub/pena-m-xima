@@ -216,7 +216,9 @@ const _un=updateNPC;updateNPC=function(n,dt){const b=brain(n);needs(n,b,dt);look
 if(typeof updateGuard==='function'){const _ug=updateGuard;
  updateGuard=function(g,dt,now){const b=brain(g);needs(g,b,dt);look(g,b,dt);
   if(!g.base)g.base=g.spd;g.spd=g.base*(g.hp<g.mhp*.35?.8:1)*(b.tr==='agressivo'?1.1:1);
-  if(g.ko>0||g.down>0)return _ug(g,dt,now);
+  if(g.ko>0){if(!g._dead){g._dead=1;g.ko=Math.max(g.ko,45);g.hp=Math.min(g.hp,0);g.state='patrol';g.tx=null}return _ug(g,dt,now)}
+  if(g._dead){g._dead=0;g.hp=Math.max(20,g.mhp*.4);b.fear=.4}
+  if(g.down>0)return _ug(g,dt,now);
   if(g.hurt>.15){if(!g._hz){g._hz=1;if(P.atk>0&&Math.abs(g.x-P.x)<300&&g.scene===P.scene){say(g,pk(['Ahh! Reforços!','Está a atacar-me!','Reforços, depressa!']),2.4);noise(P.scene,P.x);pRel(g,-8)}}}else g._hz=0;
   if(g.state!=='chase'&&g.hp<g.mhp)g.hp=Math.min(g.mhp,g.hp+dt*.2);
   if(!g.fixed&&g.state==='patrol'){const see=g.scene===P.scene&&playerSeenBy(g);
