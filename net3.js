@@ -5,20 +5,26 @@ const RS=[.4,.5,.6,.7,.8,.9,1],NL=[2,3,3,6];
 let ri=mob?2:4,q=mob?1:2,ema=33,cool=1.5,good=0,last=performance.now();
 function apply(){R3.rs=RS[ri];R3.q=q;if(R3.gl){R3.gl.nl=q>=2?6:(q===1?3:2);R3.gl.noOut=q<1}}
 R3.rs=RS[ri];R3.q=q;
+let FORCE=null;try{FORCE=localStorage.getItem('pm_q')||null}catch(e){}
+const PRE={low:[1,0],mid:[3,1],high:[5,2]};
+function setQ(m){FORCE=(m&&m!=='auto')?m:null;try{FORCE?localStorage.setItem('pm_q',FORCE):localStorage.removeItem('pm_q')}catch(e){}
+  if(FORCE){ri=PRE[FORCE][0];q=PRE[FORCE][1]}apply()}
+window.PMQ={set:setQ,get:()=>FORCE||'auto'};
+if(FORCE&&PRE[FORCE]){ri=PRE[FORCE][0];q=PRE[FORCE][1];R3.rs=RS[ri];R3.q=q}
 const _r=render;
 render=function(now){
   const t=performance.now(),dt=Math.min(250,t-last);last=t;
   ema+=(dt-ema)*.12;cool-=dt/1000;
-  if(cool<=0){
+  if(cool<=0&&!FORCE){
     if(ema>46){ /* lento: baixa */
       if(ri>1){ri--;}else if(q>0){q--;ri=Math.min(ri+2,RS.length-1)}else if(ri>0)ri--;
       cool=1.2;good=0;apply();R3.perf=Math.round(1000/ema);
     }else if(ema<21){ /* folga: sobe devagar */
       good+=1;if(good>=4){good=0;
-        if(ri<(mob?4:6)){ri++;cool=2;apply()}
-        else if(q<(mob?1:2)){q++;ri=Math.max(ri-2,1);cool=3;apply()}}
+        if(ri<(mob&&ema>13?4:6)){ri++;cool=2;apply()}
+        else if(q<(mob&&ema>13?1:2)){q++;ri=Math.max(ri-2,1);cool=3;apply()}}
       cool=Math.max(cool,.5)
-    }else good=0;
+    }else{good=0;if(mob&&ri>4&&ema>16){ri--;cool=2;apply()}}
   }
   if(R3.gl&&R3.gl.nl==null)apply();
   _r(now)};
