@@ -27,10 +27,20 @@ if(typeof menuPanel==='function'){const _m=menuPanel;menuPanel=function(){_m.app
   try{const q=window.PMQ?PMQ.get():'auto';
    openPanel('Menu',null,[{t:'Inventário',f:invPanel},{t:'Missões',f:missionPanel},{t:'Estado',f:statusPanel},{t:'Como jogar',f:helpPanel},
     {t:'Qualidade gráfica: '+QN[q],f:()=>{PMQ.set(QO[(QO.indexOf(q)+1)%4]);menuPanel()}},
+    {t:'Cópia de segurança',f:bkPanel},{t:'Relatório de erros',f:logPanel},
     {t:'Rever tutorial',f:()=>{closePanel();setTimeout(()=>show(0),250)}},
     {t:muted?'Ligar som':'Desligar som',f:()=>{muted=!muted;menuPanel()}},
     {t:'Guardar e sair para o ecrã inicial',f:()=>{saveGame();closePanel();showTitle()}},
     {t:'Continuar',f:closePanel}])}catch(e){}}}
+/* cópia de segurança do progresso: código de texto para guardar/colar */
+function bkPanel(){let cur='';try{cur=localStorage.getItem(SAVEKEY)||''}catch(e){}
+  const code=cur?btoa(unescape(encodeURIComponent(cur))):'';
+  openPanel('Cópia de segurança','<p>Guarda este código (ex.: nas notas do telemóvel). Se perderes o progresso, cola-o para recuperar.</p><textarea id="pmBk" style="width:100%;height:90px;font-size:11px;border-radius:10px;padding:8px;background:#0b0e14;color:#fff;border:1px solid #444">'+code+'</textarea>',[
+   {t:'Copiar código',f:()=>{const t=document.getElementById('pmBk');t.select();try{navigator.clipboard.writeText(t.value);toast('Copiado')}catch(e){document.execCommand&&document.execCommand('copy')}}},
+   {t:'Restaurar do código colado',f:()=>{try{const v=document.getElementById('pmBk').value.trim();const j=decodeURIComponent(escape(atob(v)));JSON.parse(j);localStorage.setItem(SAVEKEY,j);toast('Progresso restaurado. Volta ao ecrã inicial e carrega Continuar.')}catch(e){toast('Código inválido')}}},
+   {t:'Voltar',f:menuPanel}])}
+function logPanel(){const l=window.PMLOG().slice(-12).join('\n')||'Sem erros registados.';
+  openPanel('Relatório de erros','<p>Se algo falhar, envia isto ao criador.</p><textarea id="pmLg" readonly style="width:100%;height:150px;font-size:11px;border-radius:10px;padding:8px;background:#0b0e14;color:#fff;border:1px solid #444">'+l+'</textarea>',[{t:'Copiar',f:()=>{const t=document.getElementById('pmLg');t.select();try{navigator.clipboard.writeText(t.value);toast('Copiado')}catch(e){}}},{t:'Voltar',f:menuPanel}])}
 /* registo de erros (últimos 30, local) */
 const LOG=[];function lg(m){LOG.push(new Date().toISOString().slice(11,19)+' '+String(m).slice(0,160));if(LOG.length>30)LOG.shift();try{localStorage.setItem('pm_log',JSON.stringify(LOG))}catch(e){}}
 addEventListener('error',e=>lg(e.message+' @'+(e.filename||'').split('/').pop()+':'+e.lineno));addEventListener('unhandledrejection',e=>lg('promise '+(e.reason&&e.reason.message||e.reason)));

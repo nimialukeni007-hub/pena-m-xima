@@ -26,8 +26,8 @@ function addRel(a,o,d){const m=brain(a).m.r;m[o.name]=clampv(rel(a,o)+d,-100,100
 function pRel(n,d){const m=brain(n).m;m.p=clampv((m.p||0)+d,-100,100)}
 /* ---------- linhas de conversa ---------- */
 const TALK={calmo:['Hoje está calmo.','Um dia de cada vez.','Isto passa.'],violento:['Se alguém me chatear, leva.','Aqui mandam os fortes.'],ladrao:['Aqui tudo tem preço.','Se vires algo mal posto, avisa.'],covarde:['Não quero problemas.','Eu não vi nada.'],sociavel:['Já comeste?','Há novidades?'],chefe:['Neste pátio há regras.','Respeito primeiro.'],duro:['Em ordem.']};
-const ANS=['Pois.','É verdade.','Hmm, não sei…','Ha, boa!','Tens razão.'];
-const GOOD=['Respeito, irmão.','Estás bem? Conta comigo.','Bom ver-te.'],BAD=['Não me olhes assim.','Ainda me deves uma.','Afasta-te de mim.'];
+const ANS=['Pois.','É verdade.','Hmm, não sei…','Ha, boa!','Tens razão.','Nem me fales nisso.','Se calhar tens razão.','Isso é que era bom.','Cala-te, que vem aí um guarda.','Já ouvi pior.','Também acho.','Quem diria…','Pronto, deixa lá.'];
+const GOOD=['Respeito, irmão.','Estás bem? Conta comigo.','Bom ver-te.','Se precisares, sabes onde me encontrar.','Aqui és bem-vindo.','Tens feito um bom nome por cá.'],BAD=['Não me olhes assim.','Ainda me deves uma.','Afasta-te de mim.','Não gosto da tua cara.','Vai chatear outro.','Tenho boa memória, novato.'];
 /* ---------- barulho e guardas ---------- */
 function noise(sc,x){let best=null,bd=1e9;for(const g of GUARDS){if(g.fixed||g.sec||g.state!=='patrol'||g.inv)continue;const d=g.scene===sc?Math.abs(g.x-x):900+Math.random()*900;if(d<bd){bd=d;best=g}}
   if(best)best.inv={scene:sc,x:Math.max(100,x),t:28};
@@ -82,6 +82,8 @@ function topic(n,b,t){const L=(TALK[b.tr]||TALK.calmo).slice(),hr=hh(),p=b.m.p;
   if(p<-30)L.push('Aquele novato é perigoso, cuidado.');if(p>30)L.push('O novato é de confiança.');
   if(guardNear(n,500))L.push('Fala baixo, o guarda está a olhar.');
   if(b.hunger>.6)L.push('Estou com fome, já passou a hora?');
+  L.push('Lembras-te de lá fora? Já nem sei que dia é.','Dizem que o diretor vai mudar o regulamento.','O pão da cantina hoje estava duro outra vez.','Há quem diga que existe um túnel. Eu não sei de nada.','A minha família não me visita há semanas.','Quando sair, vou fazer tudo diferente.','Já viste a vista da janela da cela? Só muro.','Cuidado com a revista, anda sempre a aparecer.');
+  if(S.day>3)L.push('Já são '+S.day+' dias aqui dentro…');if(hr>=12&&hr<14)L.push('O almoço é o melhor momento do dia.');if(hr>=13&&hr<18)L.push('No pátio ao menos apanha-se sol.');if(P.rep>40)L.push('Dizem por aí que és respeitado.');if(P.rep<-20)L.push('Andam a falar mal de ti.');
   const e=NPC.find(o=>o!==n&&rel(n,o)<-40);if(e)L.push(e.name+' que não me apareça à frente. Vi-o por '+placeName(e.scene)+'.');
   return pk(L)}
 function face(a,t){a.face=Math.sign(t.x-a.x)||a.face}
